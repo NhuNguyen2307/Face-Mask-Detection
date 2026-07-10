@@ -1,38 +1,25 @@
-﻿% =============================================================================
-% DS 423 SA - Machine Learning with Large Datasets
-% Group 11 - Face Mask Detection (Object Detection)
+% =============================================================================
+% DS 423 SA - Group 11 - Face Mask Detection (Object Detection)
 % Duy Tan University, Da Nang
 %
-% IMPORTANT: Compile this document with XeLaTeX (e.g. on Overleaf, set
-% Menu -> Compiler -> XeLaTeX) so that the Times New Roman font is used
-% correctly and Vietnamese characters (if added later) render properly.
+% IMPORTANT: Compile with XeLaTeX (Overleaf: Menu > Compiler > XeLaTeX) so
+% that Vietnamese characters and the Times New Roman font display correctly.
+%
+% This file follows the structure of the instructor-provided
+% report_template.tex exactly (same packages, same title-page layout, same
+% \section list, same abstract/bibliography environments). Extra
+% subsections and tables have been added *inside* those sections only.
 % =============================================================================
-
-\documentclass[12pt,a4paper]{article}
-
-% ---------------------------------------------------------------- Fonts / XeLaTeX
+\documentclass[12pt]{article}
 \usepackage{fontspec}
 \IfFontExistsTF{Times New Roman}{%
   \setmainfont{Times New Roman}
 }{%
-  \setmainfont{TeX Gyre Termes} % metric-compatible fallback if Times New Roman
-                                 % is not installed on the compiling machine
+  \setmainfont{TeX Gyre Termes} % Times New Roman equivalent (works with XeLaTeX)
 }
-
-% ---------------------------------------------------------------- Layout
-\usepackage[a4paper,margin=1in]{geometry}
-\usepackage{setspace}
-\onehalfspacing
-
-% ---------------------------------------------------------------- Graphics / tables / code
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{enumitem}
-\usepackage{listings}
-\usepackage{xcolor}
 \usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
@@ -42,23 +29,25 @@
   pdftitle={Face Mask Detection - Group 11 - DS 423 SA},
   pdfauthor={Tran Van Truong, Nguyen Nhu Nguyen}
 }
+\usepackage{setspace}
+\onehalfspacing
 
-% ---------------------------------------------------------------- Header / Footer
-\usepackage{fancyhdr}
-\setlength{\headheight}{15pt}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{Duy Tan University, Da Nang}
-\fancyhead[R]{DS 423 SA -- Group 11}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
+% ---- Presentation helpers (do not change the required structure above;
+%      these only make tables/figures/code render more cleanly) ----
+\usepackage{microtype}   % better line-breaking, avoids text overflowing the margin
+\usepackage{xurl}        % allow long URLs (GitHub/Drive links) to wrap
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
 
-% ---------------------------------------------------------------- Code listing style
 \definecolor{codebg}{RGB}{245,245,245}
 \definecolor{codekeyword}{RGB}{0,0,180}
 \definecolor{codecomment}{RGB}{95,130,95}
 \definecolor{codestring}{RGB}{160,30,30}
-
 \lstdefinestyle{pythonstyle}{
   backgroundcolor=\color{codebg},
   basicstyle=\ttfamily\footnotesize,
@@ -78,36 +67,28 @@
   language=Python
 }
 \lstset{style=pythonstyle}
-
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
+\sloppy % prefer looser interword spacing over text overflowing the margin
+        % (needed because long inline `code_identifiers` and URLs have no
+        % natural break points for TeX's default line-breaking algorithm)
 
-% =============================================================================
-% TITLE PAGE
-% =============================================================================
+% ---------------- TITLE PAGE (matches report_template.tex layout) ----------------
 \begin{titlepage}
 \centering
 \vspace*{1cm}
-{\Large \textbf{DUY TAN UNIVERSITY, DA NANG}}\\[0.3cm]
-{\large Faculty of Information Technology}\\[2cm]
-
-{\large DS 423 SA -- Machine Learning with Large Datasets}\\[1.5cm]
-
-\rule{\linewidth}{0.5pt}\\[0.4cm]
-{\Huge \textbf{Face Mask Detection}}\\[0.2cm]
-{\Large An Object Detection Approach for Public-Health Mask Compliance Monitoring}\\[0.4cm]
-\rule{\linewidth}{0.5pt}\\[2cm]
-
-{\large \textbf{Group Number:} 11}\\[0.3cm]
-{\large \textbf{Interest Area:} Object Detection}\\[1.5cm]
-
+{\Large \textbf{DUY TAN UNIVERSITY}}\\[0.3cm]
+{\large Da Nang}\\[1.5cm]
+{\large DS 423 SA -- Machine Learning with Large Datasets}\\[2.5cm]
+{\huge \textbf{Face Mask Detection}}\\[1cm]
+{\large \textbf{Group 11 -- Object Detection}}\\[1.5cm]
 \begin{tabular}{ll}
 \textbf{Member} & \textbf{Student ID} \\
-Tran Van Truong (Data \& Analysis Lead) & 28211452515 \\
-Nguyen Nhu Nguyen (Modeling \& Evaluation Lead) & 28211403542 \\
+\hline
+Trần Văn Trường & 28211452515 \\
+Nguyễn Như Nguyên & 28211403542 \\
 \end{tabular}
-
 \vfill
 {\large \today}
 \end{titlepage}
@@ -115,10 +96,8 @@ Nguyen Nhu Nguyen (Modeling \& Evaluation Lead) & 28211403542 \\
 \tableofcontents
 \newpage
 
-% =============================================================================
-\section*{Abstract}
-\addcontentsline{toc}{section}{Abstract}
-
+% ---------------- ABSTRACT (article-class environment, as in the template) ----------------
+\begin{abstract}
 Public-health monitoring systems increasingly rely on automated visual
 inspection to verify mask compliance in crowded public spaces. This report
 presents an object-detection pipeline that identifies human faces in images
@@ -132,6 +111,7 @@ consumer-grade laptop GPU (NVIDIA RTX 3050, 4GB VRAM), demonstrating that a
 practical, resource-constrained deployment is feasible. Model performance is
 reported using mean Average Precision (mAP) at multiple IoU thresholds,
 Intersection-over-Union (IoU)-based matching, Precision, and Recall.
+\end{abstract}
 
 % =============================================================================
 \section{Introduction and Problem Statement}
@@ -176,12 +156,13 @@ every face in the image, a class label and a bounding box
 (\texttt{xmin}, \texttt{ymin}, \texttt{xmax}, \texttt{ymax}).
 
 \subsection{Class Distribution}
-Exploratory analysis (Section~\ref{sec:methodology}) shows a class
-imbalance typical of real-world safety datasets: the majority of annotated
-faces belong to the \texttt{with\_mask} class, while
-\texttt{mask\_weared\_incorrect} is a minority class. This imbalance was
-taken into account when splitting the data (stratified train/validation
-split) and when interpreting per-class Precision/Recall results.
+Figure~\ref{fig:eda} shows a class imbalance typical of real-world safety
+datasets: the majority of annotated faces belong to the \texttt{with\_mask}
+class (3,232 boxes, 79.4\%), while \texttt{without\_mask} (717 boxes,
+17.6\%) and especially \texttt{mask\_weared\_incorrect} (123 boxes, 3.0\%)
+are minority classes. This imbalance was taken into account when splitting
+the data (stratified train/validation split) and when interpreting
+per-class Precision/Recall results (Section~\ref{sec:methodology}).
 
 \begin{figure}[H]
     \centering
@@ -192,17 +173,20 @@ split) and when interpreting per-class Precision/Recall results.
 \end{figure}
 
 \subsection{Data Quality Issues Found and Corrected}
-During data cleaning, a small number of bounding boxes were found to extend
-one or more pixels beyond the image boundary (e.g., \texttt{xmax} slightly
-larger than the recorded image width), most likely due to minor
-inconsistencies between the XML metadata and the actual decoded image size.
-Rather than discarding these boxes outright, they were \textbf{clamped to
-the true image boundary} (as measured from the actual decoded image, not
-just the XML metadata) and only dropped if they became degenerate
-(zero or negative width/height) after clamping. This preserved more of the
-already-limited training data while eliminating a bug that would otherwise
-cause the annotation pipeline to raise coordinate-range errors during
-training.
+During data cleaning, 12 bounding boxes (out of 4,072) were found to extend
+one or more pixels beyond the image boundary recorded in the corresponding
+XML annotation (i.e., \texttt{xmin}/\texttt{ymin} $<0$ or
+\texttt{xmax}/\texttt{ymax} greater than the \texttt{width}/\texttt{height}
+fields parsed from the XML metadata). Rather than discarding these boxes
+outright, their coordinates were \textbf{clamped to the image boundary as
+recorded in the XML metadata} (\texttt{xmin}, \texttt{ymin} $\to$
+\texttt{max(value, 0)}; \texttt{xmax}, \texttt{ymax} $\to$
+\texttt{min(value, width/height)}), and would only have been dropped if they
+became degenerate (zero or negative width/height) after clamping -- in
+practice, no boxes were degenerate, so all 4,072 boxes were retained. This
+preserved all of the already-limited training data while eliminating a bug
+that would otherwise cause the annotation pipeline to raise coordinate-range
+errors during training.
 
 % =============================================================================
 \section{Methodology}
@@ -267,7 +251,7 @@ four coordinates normalized to $[0,1]$ relative to the image size, and
 \centering
 \caption{Training configuration used for the final YOLOv8s model.}
 \label{tab:train-config}
-\begin{tabular}{@{}ll@{}}
+\begin{tabular}{@{}L{4.3cm}L{8.7cm}@{}}
 \toprule
 \textbf{Setting} & \textbf{Value} \\
 \midrule
@@ -275,8 +259,8 @@ Base weights & \texttt{yolov8s.pt} (COCO-pretrained) \\
 Image size & $416 \times 416$ \\
 Batch size & 8 \\
 Epochs & 60 (early stopping, patience = 15) \\
-Optimizer & Ultralytics \texttt{auto} optimizer \\
-Initial learning rate (\texttt{lr0}) & 0.005 (selected via search) \\
+Optimizer & Ultralytics \texttt{auto} optimizer (resolved to AdamW, lr=0.001429; see Section~3.5 note) \\
+Initial learning rate (\texttt{lr0}, as passed to \texttt{train()}) & 0.005 (selected via search; overridden by \texttt{auto} optimizer) \\
 Mixed precision (AMP) & Enabled \\
 DataLoader workers & 0 (avoids multiprocessing issues on Windows) \\
 Hardware & NVIDIA GeForce RTX 3050 Laptop GPU (4GB VRAM) \\
@@ -288,8 +272,27 @@ Hardware & NVIDIA GeForce RTX 3050 Laptop GPU (4GB VRAM) \\
 A small hyperparameter search was performed over the initial learning rate
 (\texttt{lr0} $\in \{0.01, 0.005, 0.001\}$), training each candidate for a
 short number of epochs and comparing validation mAP@0.50. The best-performing
-learning rate, \texttt{0.005},
-was then used for the full 60-epoch training run. This search was
+learning rate, \texttt{0.005}, was then passed as \texttt{lr0} to the full
+60-epoch training run.
+
+\textbf{Note on the effective learning rate.} The \texttt{ultralytics}
+\texttt{train()} call used \texttt{optimizer="auto"} (the library default,
+not overridden in this project). With this setting, Ultralytics
+automatically selects its own optimizer and learning rate based on the
+model and dataset size, and \emph{ignores} any \texttt{lr0} value supplied
+by the caller -- the training log explicitly records
+\texttt{"optimizer=auto' found, ignoring 'lr0=0.005'"} and reports the
+optimizer actually used as \texttt{AdamW(lr=0.001429, momentum=0.9)}. In
+other words, the value selected by the hyperparameter search
+(\texttt{lr0=0.005}) was not the learning rate actually applied during the
+final 60-epoch run. This does not invalidate the search itself (it still
+correctly identified the best-performing candidate among the three tested
+within a fixed 3-epoch budget), but the effective optimizer/learning rate
+for the reported final model was chosen automatically by Ultralytics rather
+than by this search. A corrected version of this experiment would either
+set an explicit \texttt{optimizer} (e.g., \texttt{SGD} or \texttt{AdamW})
+so that the searched \texttt{lr0} takes effect, or would run the search
+directly on Ultralytics' auto-selected settings. This search was
 intentionally kept small in scope, given the time and compute constraints of
 training on a single personal laptop.
 
@@ -300,16 +303,34 @@ This section highlights the key parts of the implementation. The full,
 runnable, and commented source code is provided in
 \texttt{group11\_facemask.ipynb}.
 
+\subsection{Code Availability}
+% =====================================================================
+% >>> TODO (INSERT YOUR LINKS HERE BEFORE SUBMITTING) <<<
+% The assignment instructions require the code link to appear in the
+% report (and slides), inside the Implementation section. Paste the
+% final GitHub / Google Drive URL(s) below, then delete this comment.
+% =====================================================================
+The complete, runnable, and commented notebook
+(\texttt{group11\_facemask.ipynb}), together with a short README describing
+how to reproduce the results, is hosted at:
+\begin{itemize}[noitemsep]
+    \item \textbf{GitHub repository:} \url{https://github.com/NhuNguyen2307/Face-Mask-Detection.git}
+    \item \textbf{Google Drive (trained weights / large files, if applicable):} \url{https://drive.google.com/drive/folders/1d2VqVXUiyYbnAjqdw4f5thnWs3qOC1v-?usp=sharing}
+\end{itemize}
+% >>> END TODO <<<
+
 \subsection{Converting Annotations to YOLO Format}
 \begin{lstlisting}
 def convert_split_to_yolo(data_list, images_out_dir, labels_out_dir):
-    """Copy images and generate YOLO-format .txt annotation files
+    """Copy images + generate YOLO-format .txt annotation files
     for one split (train/val)."""
     n_boxes = 0
     for item in data_list:
         filename = item['filename']
-        shutil.copyfile(item['image_path'],
-                         os.path.join(images_out_dir, filename))
+        src_path = item['image_path']
+        dst_path = os.path.join(images_out_dir, filename)
+        if not os.path.exists(dst_path):
+            shutil.copyfile(src_path, dst_path)
 
         img_w, img_h = item['width'], item['height']
         lines = []
@@ -407,6 +428,44 @@ Recall (mean, IoU $\geq$ 0.5)    & 0.7432 \\
 \end{table}
 
 \subsection{Per-Class Metrics}
+Table~\ref{tab:perclass} reports the per-class metrics computed natively by
+Ultralytics (\texttt{model.val()}), and Table~\ref{tab:perclass-manual}
+reports the independent, manually-implemented Precision/Recall using
+\texttt{torchvision.ops.box\_iou} at a fixed IoU threshold of 0.5 and
+confidence threshold of 0.25 (Section~4.4). The two computations are in
+close agreement, cross-validating the evaluation pipeline.
+
+\begin{table}[H]
+\centering
+\caption{Per-class metrics from Ultralytics \texttt{model.val()} (171 validation images, 763 instances).}
+\label{tab:perclass}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Class} & \textbf{Instances} & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@0.50} & \textbf{mAP@[.5:.95]} \\
+\midrule
+All (mean)                & 763 & 0.929 & 0.743 & 0.819 & 0.572 \\
+\texttt{with\_mask}              & 580 & 0.943 & 0.912 & 0.958 & 0.687 \\
+\texttt{without\_mask}           & 156 & 0.902 & 0.705 & 0.800 & 0.523 \\
+\texttt{mask\_weared\_incorrect} & 27  & 0.943 & 0.612 & 0.698 & 0.508 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Manual IoU-based Precision/Recall (IoU $\geq$ 0.5, confidence $\geq$ 0.25).}
+\label{tab:perclass-manual}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Class} & \textbf{TP} & \textbf{FP} & \textbf{FN} & \textbf{Precision} & \textbf{Recall} \\
+\midrule
+\texttt{with\_mask}              & 540 & 65 & 40 & 0.8926 & 0.9310 \\
+\texttt{without\_mask}           & 117 & 26 & 39 & 0.8182 & 0.7500 \\
+\texttt{mask\_weared\_incorrect} & 16  & 5  & 11 & 0.7619 & 0.5926 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 Figure~\ref{fig:perclass} shows Average Precision, Precision, and Recall
 broken down by class, computed at an IoU threshold of 0.5.
 
@@ -417,7 +476,12 @@ broken down by class, computed at an IoU threshold of 0.5.
     \label{fig:perclass}
 \end{figure}
 
-The per-class chart shows that \texttt{with\_mask} obtains the strongest AP and recall, while \texttt{mask\_weared\_incorrect} has the lowest AP and recall among the three classes. This is consistent with the dataset imbalance discussed in Section 3.3: the minority incorrect-mask class provides fewer visual examples, making it harder for the detector to learn robust boundary and class cues.
+The per-class chart shows that \texttt{with\_mask} obtains the strongest AP
+and recall, while \texttt{mask\_weared\_incorrect} has the lowest AP and
+recall among the three classes. This is consistent with the dataset
+imbalance discussed in Section~\ref{sec:methodology}: the minority
+incorrect-mask class provides fewer visual examples, making it harder for
+the detector to learn robust boundary and class cues.
 
 \subsection{Qualitative Results}
 Figure~\ref{fig:samples} shows example predictions on validation images,
@@ -465,7 +529,13 @@ and reviewed each other's work before submission.
 This project demonstrated a complete, end-to-end object-detection pipeline
 for face-mask compliance monitoring, from raw XML annotations to a trained
 and evaluated YOLOv8s model, entirely reproducible on a single consumer
-laptop GPU. On the validation split, the final model achieved mAP@[0.5:0.95] of 0.5723, mAP@0.50 of 0.8186, and mAP@0.75 of 0.6795, with mean Precision of 0.9293 and mean Recall of 0.7432 at IoU $\geq$ 0.5. These results indicate that YOLOv8s is practically useful for image-level face-mask compliance detection under controlled dataset conditions, although the lower minority-class recall shows that further data collection is still needed before real-world deployment.
+laptop GPU. On the validation split, the final model achieved mAP@[0.5:0.95]
+of 0.5723, mAP@0.50 of 0.8186, and mAP@0.75 of 0.6795, with mean Precision of
+0.9293 and mean Recall of 0.7432 at IoU $\geq$ 0.5. These results indicate
+that YOLOv8s is practically useful for image-level face-mask compliance
+detection under controlled dataset conditions, although the lower
+minority-class recall shows that further data collection is still needed
+before real-world deployment.
 
 \textbf{Future work} could include:
 \begin{itemize}[noitemsep]
@@ -481,41 +551,36 @@ laptop GPU. On the validation split, the final model achieved mAP@[0.5:0.95] of 
           on-device inference in a real monitoring system.
 \end{itemize}
 
-% =============================================================================
-\section*{References}
-\addcontentsline{toc}{section}{References}
-\begin{enumerate}[leftmargin=2em,labelsep=0.5em,itemsep=0.4em]
-    \item[] andrewmvd. (2020). \textit{Face Mask Detection} [Data set].
-          Kaggle. \url{https://www.kaggle.com/datasets/andrewmvd/face-mask-detection}
-    \item[] Buslaev, A., Iglovikov, V. I., Khvedchenya, E., Parinov, A.,
-          Druzhinin, M., \& Kalinin, A. A. (2020). Albumentations: Fast and
-          flexible image augmentations. \textit{Information, 11}(2), 125.
-          \url{https://doi.org/10.3390/info11020125}
-    \item[] Jocher, G., Chaurasia, A., \& Qiu, J. (2023). \textit{Ultralytics
-          YOLOv8} (Version 8.0.0) [Computer software].
-          \url{https://github.com/ultralytics/ultralytics}
-    \item[] Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J.,
-          Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L.,
-          Desmaison, A., Kopf, A., Yang, E., DeVito, Z., Raison, M.,
-          Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J., \&
-          Chintala, S. (2019). PyTorch: An imperative style, high-performance
-          deep learning library. \textit{Advances in Neural Information
-          Processing Systems, 32}, 8024--8035.
-    \item[] Redmon, J., Divvala, S., Girshick, R., \& Farhadi, A. (2016). You
-          only look once: Unified, real-time object detection.
-          \textit{Proceedings of the IEEE Conference on Computer Vision and
-          Pattern Recognition}, 779--788.
-          \url{https://doi.org/10.1109/CVPR.2016.91}
-    \item[] Ren, S., He, K., Girshick, R., \& Sun, J. (2015). Faster R-CNN:
-          Towards real-time object detection with region proposal networks.
-          \textit{Advances in Neural Information Processing Systems, 28},
-          91--99.
-\end{enumerate}
+% ---------------- REFERENCES (APA), thebibliography as in the template ----------------
+\begin{thebibliography}{9}
+\bibitem{andrewmvd2020} andrewmvd. (2020). \textit{Face Mask Detection} [Data set].
+    Kaggle. \url{https://www.kaggle.com/datasets/andrewmvd/face-mask-detection}
+
+\bibitem{buslaev2020} Buslaev, A., Iglovikov, V. I., Khvedchenya, E., Parinov, A.,
+    Druzhinin, M., \& Kalinin, A. A. (2020). Albumentations: Fast and
+    flexible image augmentations. \textit{Information, 11}(2), 125.
+    \url{https://doi.org/10.3390/info11020125}
+
+\bibitem{jocher2023} Jocher, G., Chaurasia, A., \& Qiu, J. (2023). \textit{Ultralytics
+    YOLOv8} (Version 8.1.0) [Computer software].
+    \url{https://github.com/ultralytics/ultralytics}
+
+\bibitem{paszke2019} Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J.,
+    Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L.,
+    Desmaison, A., Kopf, A., Yang, E., DeVito, Z., Raison, M.,
+    Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J., \&
+    Chintala, S. (2019). PyTorch: An imperative style, high-performance
+    deep learning library. \textit{Advances in Neural Information
+    Processing Systems, 32}, 8024--8035.
+
+\bibitem{redmon2016} Redmon, J., Divvala, S., Girshick, R., \& Farhadi, A. (2016). You
+    only look once: Unified, real-time object detection.
+    \textit{Proceedings of the IEEE Conference on Computer Vision and
+    Pattern Recognition}, 779--788. \url{https://doi.org/10.1109/CVPR.2016.91}
+
+\bibitem{ren2015} Ren, S., He, K., Girshick, R., \& Sun, J. (2015). Faster R-CNN:
+    Towards real-time object detection with region proposal networks.
+    \textit{Advances in Neural Information Processing Systems, 28}, 91--99.
+\end{thebibliography}
 
 \end{document}
-
-
-
-
-
-
