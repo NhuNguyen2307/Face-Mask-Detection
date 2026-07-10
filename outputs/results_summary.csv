@@ -1,0 +1,2 @@
+model,num_classes,img_size,best_lr0,epochs_trained,mAP@[0.5:0.95],mAP@0.50,mAP@0.75,Precision,Recall
+"YOLOv8s (Ultralytics, pretrained COCO)",3,416,0.005,60,0.5723,0.8186,0.6795,0.9293,0.7432
